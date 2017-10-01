@@ -1,0 +1,220 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <link href="css/bootstrap.min.css" rel="stylesheet" />
+    <link href="css/SharedStyles.css" rel="stylesheet" />
+    <link href="css/Todo.css" rel="stylesheet" />
+    <!-- prevent favicon request, see https://stackoverflow.com/questions/1321878/how-to-prevent-favicon-ico-requests  -->
+    <link rel="icon" type="image/png" href="data:image/png;base64,iVBORw0KGgo=">
+    <title>Todo SPA</title>
+</head>
+<body>
+
+    <!-- ----------------------------- Demo Header Section ---------------------------- -->
+
+    <!-- Hardcoded, demonstration user context, i.e. faux login control  -->
+    <header style="margin-top:5px; text-align:center">
+        <span style="font-size: 18px;">Demo user context</span>
+        <select style="width:125px" id="userContext" onchange="resetUser(this)">
+            <option value="" disabled selected>Set user</option>
+            <option value="1">James</option>
+            <option value="2">Cameron</option>
+            <option value="3">Natasha</option>
+        </select>
+    </header>
+
+    <script>
+        // This in-line script is used by the demo to easy swapping of user context
+
+        // Reset user id in session storage and in DOM (invoked by onchange event)
+        function resetUser(userSelect) {
+            sessionStorage.setItem('userId', userSelect.value);
+            $TodoRouter.push({ path: '/' });
+            window.location.reload(true);
+        }
+
+        // Immediately-invoked, function expression (IIFE) to check for logged in user,
+        //   and set drop-down accordingly ("userId" in session storage)
+        (function () {
+            var userId = sessionStorage.getItem('userId');
+            if (userId !== null) {
+                var userSelect = document.getElementById('userContext');
+                for (var i = 0; i < userSelect.options.length; i++) {
+                    if (userSelect.options[i].value === userId) {
+                        userSelect.selectedIndex = i;
+                        break;
+                    }
+                }
+            }
+        })();
+    </script>
+    <!-- -------------------------- End of Demo Header Section ------------------------ -->
+
+    <img id="loading-spinner" src="ajax-loading-large.gif" />
+
+    <!-- ------------------ Main Container ------------------ -->
+    <div class="container">
+        <main id="app" v-cloak>
+            <router-view></router-view>
+        </main>
+    </div>
+
+    <!-- ------------------ List Template ------------------ -->
+    <template id="todo-list">
+        <section class="todo-list-container">
+
+            <nav class="container">
+                <a class="btn btn-lg btn-default" v-on:click="toggleFilter">Filter</a>
+                <router-link class="btn btn-lg btn-default" :to="{name: 'todo-add'}">Add Todo</router-link>
+
+                <!--
+                the following, (commented out), uses the add route path instead of the route name. the end result is the same.
+                -->
+                <!--
+                <router-link class="btn btn-lg btn-default" :to="{path: '/todo-add'}">Add Todo</router-link>
+                -->
+
+                <div class="filter-status" v-html="statusMessage"></div>
+            </nav>
+
+            <!-- Todo row start -->
+            <div class="row"
+                 v-for="(todo, index) in filteredTodos"
+                 v-bind:class="altRow(todo, index)"
+                 v-bind:id="idPrefix + todo.RecId">
+
+                <div data-toggle="buttons">
+                    <label class="btn btn-lg"
+                           v-bind:class="setCompleteCss(todo)"
+                           v-on:click="toggleComplete(todo)">
+                        <input type="checkbox" v-model="todo.Complete">
+                        <span class="glyphicon glyphicon-ok"></span>
+                    </label>
+                </div>
+
+                <section class="todo-text"
+                         v-on:click="doRouterLink(todo)">
+                    <p class="todo-title">
+                        {{ todo.Title }}
+                    </p>
+                    <p class="todo-details"
+                       v-show="todo.Details != null && todo.Details.trim().length > 0"
+                       v-html="cleanText(todo.Details)">
+                    </p>
+                    <div v-show="testMode" class="testing-block">
+                        <!---             Testing                  -->
+                        { RecId: {{ todo.RecId }}, Complete: {{ todo.Complete }}, fkUserId: {{ todo.fkUserId }} }
+                    </div>
+                </section>
+
+            </div>
+
+            <label class="tst-tgl">
+                <input type="checkbox" v-model="testMode"> Test mode
+            </label>
+
+        </section>
+    </template>
+
+    <!-- ------------------ Add/create Template ------------------ -->
+    <template id="todo-add">
+        <section>
+            <h2>Add Todo <span v-show="testMode" class="testing-block">{ RecId: {{todo.RecId}} }</span></h2>
+            <form v-on:submit.prevent="addTodo">
+                <div class="form-group">
+                    <label for="add-title">Title <span style="font-size:65%">(max. length 40 char's)</span></label>
+                    <input class="form-control" id="add-title" v-model="todo.Title" maxlength="40" required />
+                </div>
+                <div class="form-group">
+                    <label for="add-details">Details</label>
+                    <textarea class="form-control" id="add-details" rows="3" v-model="todo.Details"></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="add-user">Assignment</label>
+
+                    <select id="add-user"
+                            v-model="todo.fkUserId"
+                            required
+                    >
+                        <option value="" disabled>Select user...</option>
+                        <option v-for="(name, index) in userNames"
+                                v-bind:value="name.RecId"
+                                v-text="name.LastName + ', ' + name.FirstName"></option>
+                    </select>
+                    <br />
+                    <span v-show="testMode" class="testing-block">{ fkUserId: {{ todo.fkUserId }} }</span>
+                </div>
+                <button type="submit" class="btn btn-lg btn-primary">Save</button>
+                <router-link :to="{ path: '/'}" class="btn btn-lg btn-default pull-right">Cancel</router-link>
+            </form>
+
+            <label class="tst-tgl">
+                <input type="checkbox" v-model="testMode"> Test mode
+            </label>
+
+        </section>
+    </template>
+
+    <!-- ------------------ Edit/Update Template ------------------ -->
+    <template id="todo-edit">
+        <section>
+            <h2>Edit Todo <span v-show="testMode" class="testing-block">{ RecId: {{todo.RecId}} }</span></h2>
+            <form v-on:submit.prevent="updateTodo">
+
+                <div data-toggle="buttons">
+                    <label style="display:inline">Complete</label>
+                    <label class="btn btn-lg"
+                           v-bind:class="setCompleteCss(todo)"
+                           v-on:click="toggleComplete(todo)">
+                        <input type="checkbox" v-model="todo.Complete">
+                        <span class="glyphicon glyphicon-ok"></span>
+                    </label>
+                </div>
+
+                <div class="form-group">
+                    <label for="edit-title">Title <span style="font-size:65%">(max. length 40 char's)</span></label>
+                    <input class="form-control" id="edit-title" v-model="todo.Title" maxlength="40" required />
+                </div>
+                <div class="form-group">
+                    <label for="edit-details">Details</label>
+                    <textarea class="form-control" id="edit-details" rows="3" v-model="todo.Details"></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="edit-user">Assignment</label>
+                    <select id="edit-user"
+                            v-model="todo.fkUserId"
+                            required
+                    >
+                        <option value="" disabled>Select user...</option>
+                        <option v-for="(name, index) in userNames"
+                                v-bind:value="name.RecId"
+                                v-text="name.LastName + ', ' + name.FirstName"></option>
+                    </select>
+                    <br />
+                    <span v-show="testMode" class="testing-block">{ fkUserId: {{ todo.fkUserId }}, Complete: {{ todo.Complete }} }</span>
+                </div>
+                <button type="submit" class="btn btn-lg btn-primary">Save</button>
+                <router-link :to="{ path: '/'}" class="btn btn-lg btn-default pull-right">Cancel</router-link>
+            </form>
+
+            <label class="tst-tgl">
+                <input type="checkbox" v-model="testMode"> Test mode
+            </label>
+
+        </section>
+    </template>
+
+    <!--   <script src="js/dependencies/jquery-3.1.1.js"></script> -->
+    <script src="js/dependencies/jquery-3.1.1.min.js"></script>
+    <!--<script src="js/dependencies/jquery.cookie-1.4.1.min.js"></script>-->
+    <script src="js/dependencies/bootstrap.min.js"></script>
+    <!--   <script src="js/dependencies/vue.js"></script>     -->
+    <script src="js/dependencies/vue.min.js"></script>
+    <!--   <script src="js/dependencies/vue-router.js"></script>  -->
+    <script src="js/dependencies/vue-router.min.js"></script>
+    <script src="js/todoSpaUi.js"></script>
+
+</body>
+</html>

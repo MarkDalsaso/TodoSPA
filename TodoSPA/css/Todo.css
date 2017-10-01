@@ -1,0 +1,103 @@
+﻿[v-cloak] {
+  display: none;
+}
+
+#loading-spinner {
+  display: none;
+  position: absolute;
+  top: 0; bottom:0; left: 0; right:0;
+  margin: auto;
+}
+
+div.filter-status {
+    height: 25px;
+    color: blue;
+    font-size: 18px;
+    font-weight:bold;
+    text-align: center;
+}
+
+.row {
+    border-radius: 10px;
+    margin-bottom: 10px;
+    display: -webkit-flex;
+    display: flex;
+    -webkit-flex-direction: row;
+    flex-direction: row;
+    overflow: hidden;
+}
+
+.odd-color {
+    background-color: #cae4f2;
+    border-color: #cae4f2;
+}
+
+.even-color {
+    background-color:#f3ebcc;
+    border-color: #f3ebcc;
+}
+
+.container .btn {
+    margin: 15px;
+    padding: 9px 15px;
+}
+
+.todo-list-container .btn-default, 
+form .btn-default
+{
+    background-color: #e6e6e6;
+}
+
+.todo-list-container .btn-default:hover, 
+form .btn-default:hover
+{
+    background-color: #efefef;
+}
+  
+[data-toggle=buttons] {
+    margin-top: auto;
+    margin-bottom: auto;
+}
+
+.btn-default span.glyphicon { opacity: 0; }
+.btn-success span.glyphicon { opacity: 1; }
+
+.todo-text {
+    width: 100%;
+    cursor: pointer;
+}
+
+.todo-text:hover {
+    background-color: rgba(126, 126, 126, 0.35);
+}
+
+.todo-title {
+    font-size: 125%;
+    font-weight:700;
+    text-align: center;
+    margin: 0 auto;
+}
+
+.todo-complete .todo-text > p {
+    color: #8c8c8c;
+    text-decoration: line-through;
+}
+
+.todo-details {
+    height: 55px;
+    overflow: hidden;
+    border-radius: 6px;
+    margin: 0 10px 10px 10px;
+    background-color: rgba(255, 255, 255, 0.60);
+}
+
+@media (min-width: 480px) {
+    .container {
+        padding-left: 15px;
+        padding-right: 15px;
+
+    }
+}
+
+
+

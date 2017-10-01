@@ -1,0 +1,124 @@
+﻿body, form-control {
+    font-size: 24px !important;
+    font-family: "Open Sans", Arial, sans-serif;
+    font-weight: 300;
+    background: #fff;
+}
+
+.glyphicon {
+    font-size: 50px;
+}
+
+.nav-row {
+    text-align: center;
+    padding-top: 20px;
+    padding-bottom: 20px;
+}
+
+.btn-group-lg>.btn, .btn-lg {
+    font-weight: 900;
+    font-size: 20px;
+    margin: 20px;
+    padding: 30px 20px;
+}
+
+.modal {
+    text-align: center;
+    padding: 0 !important;
+}
+
+div.modal-body, div.modal-body > label   {
+    text-align: left;
+    font-size: 18px;
+}
+
+.modal-footer > .btn-secondary {
+    float: left;
+}
+
+.modal-footer .btn+.btn {
+    margin: 20px;
+}
+
+h4.modal-title, h5.modal-title, .modal-body>p {
+    text-align:center;
+}
+
+.vcenter {
+    display: inline-block;
+    vertical-align: middle;
+    float: none;
+}
+
+/* Standard task/appointment list styles */
+.task {
+    border: solid 1px blue;
+    border-radius: 10px;
+    margin-bottom: 7px;
+    cursor: pointer;
+}
+
+.task>div.row {
+    margin-right: -10px;
+}
+
+.task-time {
+    padding: 5px 0 5px 0;
+}
+
+.task-details {
+    border: solid 1px #fff;
+    border-radius: 10px;
+}
+
+.task-details>div.row:nth-child(1) {
+    background-color: #d5f1cd;
+}
+.task-details>div:nth-child(2) {
+    background-color: #f3ebcc;
+}
+
+.task-details>div:nth-child(3) {
+    background-color: #cae4f2;
+}
+
+/* Standard clockouts list styles */
+#clockoutsList {
+    padding: 0;
+    margin-bottom: 20px;
+}
+
+#clockoutsList>h3 {
+    font-weight: bold;
+}
+
+.ClockOuts {
+    border-top: 1px dashed blue;
+    padding-top: 20px;
+    padding-bottom: 20px;
+}
+
+.ClockOuts:last-child {
+    border-bottom: 1px dashed blue;
+}
+
+/* ---- Styles used for testing messages and markup ---- */
+/* Testing block for div or span */
+.testing-block {
+    font-size: 50%;
+    font-weight:normal;
+}
+
+/* Checkbox used for testing */
+label.tst-tgl { margin: 10px; }
+label.tst-tgl > input[type=checkbox] {
+    margin: 5px;
+    transform: scale(3);
+}
+
+/*   Testing to show/unhide native checkbox state  */
+/*
+[data-toggle=buttons]>.btn input[type=checkbox], [data-toggle=buttons]>.btn input[type=radio], [data-toggle=buttons]>.btn-group>.btn input[type=checkbox], [data-toggle=buttons]>.btn-group>.btn input[type=radio] {
+    clip: auto;
+}
+*/
